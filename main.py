@@ -1,5 +1,3 @@
-import studendb
-import botdb
 import asyncio
 import sqlite3
 import random
@@ -9,11 +7,11 @@ import os
 import asyncio
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, FSInputFile
-
+from aiogram.types import Message, FSInputFile, CallbackQuery
 # from googletrans import Translator
 from translate import Translator
 from config import TOKEN
+import keybord as kb
 
 
 bot = Bot(token=TOKEN)
@@ -22,6 +20,46 @@ dp = Dispatcher()
 
 rus_buchstaben = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 engl_buchstaben = 'abcdefghijklmnopqrstuvwxyz'
+
+
+@dp.message(CommandStart())
+async def start(message: Message):
+    # await message.answer(f'Приветики, {message.from_user.first_name}', reply_markup=kb.main)
+    # await message.answer(f'Приветики, {message.from_user.first_name}', reply_markup=kb.inline_keyboard_test)
+    # await message.answer(f'Приветики, {message.from_user.first_name}', reply_markup=await kb.test_keyboard())
+    # await message.answer(f'Приветики, {message.from_user.first_name}', reply_markup=kb.inline_keyboard_test)
+    await message.answer(f'Привет, {message.from_user.first_name}', reply_markup=kb.kbprivet)
+
+
+@dp.message(Command('links'))
+async def links(message: Message):
+    await message.answer(f'Привет, {message.from_user.first_name}', reply_markup=kb.inline_keyboard_hw)
+
+
+@dp.message(Command('dynamic'))
+async def dynamic(message: Message):
+    await message.answer(f'Привет, {message.from_user.first_name}', reply_markup=kb.hwmain)
+
+
+@dp.message(F.text == 'Привет')
+async def privet_button(message: Message):
+    await message.answer(f"Привет, {message.from_user.first_name}!")
+
+
+@dp.message(F.text == 'Пока')
+async def poka_button(message: Message):
+    await message.answer(f"Пока, {message.from_user.first_name}!")
+
+
+@dp.callback_query(F.data == 'news')
+async def news(callback: CallbackQuery):
+    await callback.answer("Новости подгружаются", show_alert=True)
+    await callback.message.edit_text('Вот свежие новости!', reply_markup=await kb.test_keyboard_inline())
+
+@dp.callback_query(F.data == 'more')
+async def more(callback: CallbackQuery):
+   # await callback.answer("Новости подгружаются", show_alert=True)
+   await callback.message.edit_text('Вот new buttons!', reply_markup=await kb.hw_keyboard_inline())
 
 
 @dp.message()
